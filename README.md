@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Multi-Channel TCPA/FCC Opt-Out Integration Layer
 
 A secure, production-grade REST API webhook listener and state-tracked queue engine built in Python (FastAPI) to handle multi-channel TCPA/FCC compliance opt-outs (SMS, Email, Webhooks) and guarantee delivery to downstream CRMs and dialers (HubSpot, Salesforce, and custom targets).
@@ -235,3 +236,7 @@ Run the test suite via:
 pytest
 ```
 *Output yields 7 passed tests with 100% database lock isolation verification.*
+=======
+# tcpa-optout-integration
+tcpa-optout-integration
+>>>>>>> 44dcb2a80b029e5448c98626407a2aa3b1087806
