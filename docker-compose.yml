@@ -1,0 +1,27 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tcpa_optout_api
+    image: tcpa-optout-integration-layer:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/data.db
+      - WEB_CONCURRENCY=2
+    env_file:
+      - .env
+    restart: unless-stopped
+    volumes:
+      # Persist SQLite database between container restarts.
+      - tcpa_data:/workspace/data
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  tcpa_data:

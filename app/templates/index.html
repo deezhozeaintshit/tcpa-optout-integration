@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCPA/FCC Opt-Out Integration Control Panel</title>
+    <!-- Modern Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #08090f;
+            --surface-color: rgba(17, 19, 31, 0.65);
+            --border-color: rgba(255, 255, 255, 0.06);
+            --primary-glow: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --primary-color: #6366f1;
+            --secondary-color: #a855f7;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            background: rgba(8, 9, 15, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-glow);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.8);
+        }
+
+        .auth-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .auth-bar label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .auth-bar input {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            outline: none;
+            width: 250px;
+            transition: all 0.3s;
+        }
+
+        .auth-bar input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Hero / Headline */
+        .hero {
+            margin-bottom: 0.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        /* Metric Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .metric-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-glow);
+            opacity: 0.4;
+        }
+
+        .metric-card.success::before { background: var(--success-color); }
+        .metric-card.warning::before { background: var(--warning-color); }
+        .metric-card.danger::before { background: var(--danger-color); }
+
+        .metric-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Dynamic Grid Layout */
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.75rem;
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+
+        /* Forms styling */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3f4f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+            padding-right: 2.5rem;
+        }
+
+        .btn {
+            background: var(--primary-glow);
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        /* Integration Config List */
+        .integration-item {
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .integration-info h4 {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .integration-info p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success-color);
+        }
+
+        .badge-inactive {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger-color);
+        }
+
+        /* Custom Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background: var(--primary-glow);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Tables */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-weight: 600;
+            padding: 1rem 1.25rem;
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .status-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 500;
+        }
+
+        .status-dot::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.completed::before { background-color: var(--success-color); box-shadow: 0 0 8px var(--success-color); }
+        .status-dot.pending::before { background-color: var(--warning-color); box-shadow: 0 0 8px var(--warning-color); }
+        .status-dot.processing::before { background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); }
+        .status-dot.failed::before { background-color: var(--danger-color); box-shadow: 0 0 8px var(--danger-color); }
+        .status-dot.max_retries::before { background-color: #6b7280; }
+
+        /* Notification Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .toast {
+            background: rgba(17, 19, 31, 0.9);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(12px);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            animation: slideIn 0.3s forwards, fadeOut 0.3s 4.7s forwards;
+            font-size: 0.9rem;
+            min-width: 300px;
+        }
+
+        .toast.success { border-left: 4px solid var(--success-color); }
+        .toast.error { border-left: 4px solid var(--danger-color); }
+
+        @keyframes slideIn {
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            to { transform: translateY(-20px); opacity: 0; }
+        }
+
+        .channel-badge {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo">TCPA INTEGRATION LAYER</div>
+            <div class="auth-bar">
+                <label for="apiKey">API Authorization Key:</label>
+                <input type="password" id="apiKey" value="secure_admin_api_key_change_me" placeholder="Enter API Key">
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <h1>Opt-Out Compliance Control Panel</h1>
+            <p>Monitor multi-channel ingestion (SMS, Email, Webhooks) and verify real-time CRM updates.</p>
+        </div>
+
+        <!-- Metrics cards -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div>
+                    <div class="metric-title">Total Opt-Outs</div>
+                    <div class="metric-value" id="statTotal">-</div>
+                </div>
+                <div class="metric-subtitle">Normalized and archived</div>
+            </div>
+            <div class="metric-card warning">
+                <div>
+                    <div class="metric-title">Pending Queue Tasks</div>
+                    <div class="metric-value" id="statPending">-</div>
+                </div>
+                <div class="metric-subtitle">Awaiting CRM sync</div>
+            </div>
+            <div class="metric-card success">
+                <div>
+                    <div class="metric-title">Completed Syncs</div>
+                    <div class="metric-value" id="statCompleted">-</div>
+                </div>
+                <div class="metric-subtitle">Dispatched successfully</div>
+            </div>
+            <div class="metric-card danger">
+                <div>
+                    <div class="metric-title">Sync Failures</div>
+                    <div class="metric-value" id="statFailed">-</div>
+                </div>
+                <div class="metric-subtitle">Retrying with backoff</div>
+            </div>
+        </div>
+
+        <!-- Visual layout -->
+        <div class="dashboard-row">
+            <!-- Left panel: Charts & Ingest logs -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Real-Time Ingestion Logs</div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Identifier</th>
+                                    <th>Channel</th>
+                                    <th>Keyword / Subject</th>
+                                    <th>Ingested At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="optoutsTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted)">Loading audit trail...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">State-Tracked Queue & Retries</div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Target CRM</th>
+                                    <th>Identifier</th>
+                                    <th>Status</th>
+                                    <th>Retries</th>
+                                    <th>Last Error</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tasksTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted)">Loading tasks state...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Sync Failure Diagnostics (failed_syncs)</div>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Task ID</th>
+                                    <th>Integration</th>
+                                    <th>Identifier</th>
+                                    <th>Error Message</th>
+                                    <th>Logged At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="failedSyncsTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted)">No failures registered. System healthy!</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right panel: Manual triggering and Integration endpoints config -->
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Manual Compliance Override</div>
+                    </div>
+                    <form id="manualOptoutForm" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        <div class="form-group">
+                            <label for="manualIdentifier">Identifier (Phone or Email)</label>
+                            <input type="text" id="manualIdentifier" class="form-control" placeholder="e.g. +14155551234 or user@domain.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="manualChannel">Ingestion Channel</label>
+                            <select id="manualChannel" class="form-control form-select" required>
+                                <option value="api">Manual API Overrides</option>
+                                <option value="web">Inbound Web Portal</option>
+                                <option value="sms">Twilio SMS Gateway</option>
+                                <option value="email">SendGrid Email Hook</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="manualReason">Keyword / Override Reason</label>
+                            <input type="text" id="manualReason" class="form-control" placeholder="e.g. MANUAL_REQUEST, STOP, UNSUBSCRIBE">
+                        </div>
+                        <button type="submit" class="btn">Trigger Ingestion</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">CRM & Dialer Destinations</div>
+                    </div>
+                    <div id="integrationsContainer">
+                        <!-- Integrations will load dynamically -->
+                        <div style="text-align: center; color: var(--text-muted)">Loading integration points...</div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 0.5rem 0;">
+                    
+                    <div style="font-weight: 600; font-size: 0.95rem;">Register New Destination</div>
+                    <form id="addIntegrationForm" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="intName">Integration Name</label>
+                            <input type="text" id="intName" class="form-control" placeholder="e.g. Salesforce Production" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="intType">System Type</label>
+                            <select id="intType" class="form-control form-select" required>
+                                <option value="hubspot">HubSpot CRM</option>
+                                <option value="gohighlevel">GoHighLevel CRM</option>
+                                <option value="generic_webhook">Generic Rest Webhook</option>
+                            </select>
+                        </div>
+                        <div id="credFields" style="display: flex; flex-direction: column; gap: 1rem;">
+                            <!-- Dynamically renders based on select -->
+                        </div>
+                        <button type="submit" class="btn btn-secondary">Add Destination</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Global State & Helper Functions
+        const API_BASE = '/api/v1';
+        
+        function getHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'X-API-Key': document.getElementById('apiKey').value
+            };
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerText = message;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
+        }
+
+        // Render Dynamic Credentials Input Fields
+        const intTypeSelect = document.getElementById('intType');
+        const credFields = document.getElementById('credFields');
+
+        function renderCredFields() {
+            const val = intTypeSelect.value;
+            if (val === 'hubspot') {
+                credFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="hsToken">Access Token</label>
+                        <input type="password" id="hsToken" class="form-control" value="hubspot_mock_token" placeholder="HubSpot Private App Token" required>
+                    </div>
+                `;
+            } else if (val === 'gohighlevel') {
+                credFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="ghlLocationId">Location ID</label>
+                        <input type="text" id="ghlLocationId" class="form-control" value="mock_location_123" placeholder="GoHighLevel Location ID" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ghlToken">Access Token / API Key</label>
+                        <input type="password" id="ghlToken" class="form-control" value="gohighlevel_mock_token" placeholder="GoHighLevel Access Token" required>
+                    </div>
+                `;
+            } else if (val === 'generic_webhook') {
+                credFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="webUrl">Target URL</label>
+                        <input type="url" id="webUrl" class="form-control" placeholder="https://api.yourcrm.com/optout-listener" required>
+                    </div>
+                `;
+            }
+        }
+        
+        intTypeSelect.addEventListener('change', renderCredFields);
+        renderCredFields();
+
+        // Data Fetching and Polling
+        async function fetchDashboardData() {
+            try {
+                const headers = getHeaders();
+                // 1. Fetch Optouts list
+                const optoutsResp = await fetch(`${API_BASE}/optouts/`, { headers });
+                if (!optoutsResp.ok) throw new Error("Unauthorized or server error");
+                const optouts = await optoutsResp.json();
+                
+                // 2. Fetch Tasks list
+                const tasksResp = await fetch(`${API_BASE}/optouts/tasks`, { headers });
+                const tasks = await tasksResp.json();
+
+                // 3. Fetch Integrations list
+                const intResp = await fetch(`${API_BASE}/integrations/`, { headers });
+                const integrations = await intResp.json();
+
+                updateMetrics(optouts, tasks);
+                renderOptoutsTable(optouts);
+                renderTasksTable(tasks);
+                renderIntegrations(integrations);
+                
+                // 4. Fetch Failed Syncs list
+                const failedSyncsResp = await fetch(`${API_BASE}/optouts/failed-syncs`, { headers });
+                const failedSyncs = await failedSyncsResp.json();
+                renderFailedSyncsTable(failedSyncs);
+            } catch (err) {
+                console.error("Error fetching control panel values:", err);
+            }
+        }
+
+        function updateMetrics(optouts, tasks) {
+            document.getElementById('statTotal').innerText = optouts.length;
+            
+            let pending = 0;
+            let completed = 0;
+            let failed = 0;
+            
+            tasks.forEach(t => {
+                if (t.status === 'PENDING' || t.status === 'PROCESSING') pending++;
+                else if (t.status === 'COMPLETED') completed++;
+                else if (t.status === 'FAILED' || t.status === 'MAX_RETRIES_EXCEEDED') failed++;
+            });
+
+            document.getElementById('statPending').innerText = pending;
+            document.getElementById('statCompleted').innerText = completed;
+            document.getElementById('statFailed').innerText = failed;
+        }
+
+        function renderOptoutsTable(optouts) {
+            const tbody = document.getElementById('optoutsTableBody');
+            if (optouts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted)">No opt-outs received yet.</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = optouts.map(o => `
+                <tr>
+                    <td><strong>${escapeHtml(o.identifier)}</strong></td>
+                    <td><span class="channel-badge">${escapeHtml(o.channel)}</span></td>
+                    <td><code style="color: var(--secondary-color)">${escapeHtml(o.reason || 'N/A')}</code></td>
+                    <td>${new Date(o.created_at).toLocaleString()}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTasksTable(tasks) {
+            const tbody = document.getElementById('tasksTableBody');
+            if (tasks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted)">Task queue is currently empty.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = tasks.map(t => {
+                let statusClass = t.status.toLowerCase();
+                if (statusClass === 'max_retries_exceeded') statusClass = 'max_retries';
+                
+                return `
+                    <tr>
+                        <td><code>#${t.id}</code></td>
+                        <td>${escapeHtml(t.integration ? t.integration.name : 'Unknown')}</td>
+                        <td><strong>${escapeHtml(t.opt_out ? t.opt_out.identifier : 'N/A')}</strong></td>
+                        <td><span class="status-dot ${statusClass}">${t.status}</span></td>
+                        <td>${t.retry_count} / ${t.max_retries}</td>
+                        <td style="color: var(--danger-color); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(t.last_error || '')}">
+                            ${escapeHtml(t.last_error || 'None')}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderFailedSyncsTable(failedSyncs) {
+            const tbody = document.getElementById('failedSyncsTableBody');
+            if (!failedSyncs || failedSyncs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--success-color); font-weight: 500;">✓ No failures registered. System healthy!</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = failedSyncs.map(f => {
+                const payload = f.error_payload || {};
+                const intName = payload.integration ? payload.integration.name : 'N/A';
+                const identifier = payload.opt_out ? payload.opt_out.identifier : 'N/A';
+                const errorMsg = payload.error || 'Unknown Error';
+                
+                return `
+                    <tr>
+                        <td><code>#${f.id}</code></td>
+                        <td><code>#${f.sync_task_id}</code></td>
+                        <td>${escapeHtml(intName)}</td>
+                        <td><strong>${escapeHtml(identifier)}</strong></td>
+                        <td style="color: var(--danger-color); max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${escapeHtml(errorMsg)}">
+                            ${escapeHtml(errorMsg)}
+                        </td>
+                        <td>${new Date(f.created_at).toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderIntegrations(integrations) {
+            const container = document.getElementById('integrationsContainer');
+            if (integrations.length === 0) {
+                container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 1rem 0;">No active downstream targets. Configure one below.</div>`;
+                return;
+            }
+
+            container.innerHTML = integrations.map(i => `
+                <div class="integration-item">
+                    <div class="integration-info">
+                        <h4>${escapeHtml(i.name)}</h4>
+                        <p>Type: <code>${escapeHtml(i.type)}</code></p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="badge ${i.is_active ? 'badge-active' : 'badge-inactive'}">${i.is_active ? 'Active' : 'Muted'}</span>
+                        <label class="switch">
+                            <input type="checkbox" ${i.is_active ? 'checked' : ''} onchange="toggleIntegration(${i.id}, this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                        <button class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="deleteIntegration(${i.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Action Submissions
+        document.getElementById('manualOptoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const identifier = document.getElementById('manualIdentifier').value;
+            const channel = document.getElementById('manualChannel').value;
+            const reason = document.getElementById('manualReason').value;
+
+            try {
+                const resp = await fetch(`${API_BASE}/optouts/`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ identifier, channel, reason })
+                });
+
+                if (resp.ok) {
+                    showToast("Compliance override registered successfully.");
+                    document.getElementById('manualOptoutForm').reset();
+                    fetchDashboardData();
+                } else {
+                    const data = await resp.json();
+                    showToast(data.detail || "Failed to submit opt-out.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error while submitting request.", "error");
+            }
+        });
+
+        document.getElementById('addIntegrationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('intName').value;
+            const type = document.getElementById('intType').value;
+            
+            let credentials = {};
+            if (type === 'hubspot') {
+                credentials.access_token = document.getElementById('hsToken').value;
+            } else if (type === 'gohighlevel') {
+                credentials.location_id = document.getElementById('ghlLocationId').value;
+                credentials.access_token = document.getElementById('ghlToken').value;
+            } else if (type === 'generic_webhook') {
+                credentials.url = document.getElementById('webUrl').value;
+            }
+
+            try {
+                const resp = await fetch(`${API_BASE}/integrations/`, {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ name, type, credentials, is_active: true })
+                });
+
+                if (resp.ok) {
+                    showToast("Destination target added successfully.");
+                    document.getElementById('addIntegrationForm').reset();
+                    renderCredFields();
+                    fetchDashboardData();
+                } else {
+                    const data = await resp.json();
+                    showToast(data.detail || "Failed to add destination.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error while adding destination.", "error");
+            }
+        });
+
+        async function toggleIntegration(id, is_active) {
+            try {
+                const resp = await fetch(`${API_BASE}/integrations/${id}`, {
+                    method: 'PATCH',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ is_active })
+                });
+                
+                if (resp.ok) {
+                    showToast(`Integration status updated.`);
+                    fetchDashboardData();
+                } else {
+                    showToast("Failed to toggle status.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error.", "error");
+            }
+        }
+
+        async function deleteIntegration(id) {
+            if (!confirm("Are you sure you want to remove this CRM destination?")) return;
+            try {
+                const resp = await fetch(`${API_BASE}/integrations/${id}`, {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+                
+                if (resp.ok) {
+                    showToast("Destination removed.");
+                    fetchDashboardData();
+                } else {
+                    showToast("Failed to delete destination.", "error");
+                }
+            } catch (err) {
+                showToast("Connection error.", "error");
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Initialize and Start Polling Loop
+        fetchDashboardData();
+        setInterval(fetchDashboardData, 4000);
+    </script>
+</body>
+</html>

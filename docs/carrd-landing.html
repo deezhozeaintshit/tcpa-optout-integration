@@ -1,0 +1,301 @@
+<!--
+================================================================================
+  TCPA / FCC Opt-Out Integration Layer — Carrd-Ready Landing Page
+  Paste this into Carrd → Embed → Code (.html) at the body of a blank container.
+  Hosted demo URL? Replace DEMO_URL below with your live Railway/Render URL.
+================================================================================
+-->
+
+<style>
+  :root {
+    --bg: #08090f;
+    --surface: rgba(17, 19, 31, 0.65);
+    --border: rgba(255, 255, 255, 0.06);
+    --primary: #6366f1;
+    --secondary: #a855f7;
+    --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --success: #10b981;
+    --danger: #ef4444;
+    --text: #f3f4f6;
+    --muted: #9ca3af;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  body { background: var(--bg); color: var(--text); line-height: 1.55; }
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1;
+    background-image:
+      radial-gradient(at 10% 0%, rgba(99, 102, 241, 0.18) 0px, transparent 50%),
+      radial-gradient(at 90% 100%, rgba(168, 85, 247, 0.18) 0px, transparent 50%);
+    background-attachment: fixed;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 4rem 1.5rem; }
+
+  /* NAV */
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 0; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+  .logo { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.5px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; font-size: 0.9rem; }
+  .nav-links a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero { text-align: center; padding: 2rem 0 4rem; }
+  .badge { display: inline-block; padding: 0.4rem 0.85rem; background: rgba(99, 102, 241, 0.12); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 999px; color: var(--primary); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 1.5rem; }
+  .hero h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; letter-spacing: -1.5px; line-height: 1.05; margin-bottom: 1.25rem; }
+  .hero h1 .gradient { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p.subtitle { font-size: 1.15rem; color: var(--muted); max-width: 680px; margin: 0 auto 2rem; }
+  .cta-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.95rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 0.95rem; text-decoration: none; cursor: pointer; border: none; transition: transform 0.15s, opacity 0.15s; }
+  .btn-primary { background: var(--gradient); color: white; box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.6); }
+  .btn-secondary { background: rgba(255, 255, 255, 0.06); color: var(--text); border: 1px solid var(--border); }
+  .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  /* TRUST BAR */
+  .trust-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 1.5rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); font-size: 0.85rem; color: var(--muted); }
+  .trust-row span { display: inline-flex; align-items: center; gap: 0.5rem; }
+
+  /* SECTION */
+  section { padding: 4rem 0; }
+  .section-label { color: var(--primary); font-size: 0.8rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.75rem; }
+  h2.section-title { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; line-height: 1.15; }
+  .section-lead { color: var(--muted); max-width: 680px; font-size: 1.05rem; margin-bottom: 2.5rem; }
+
+  /* PROBLEM */
+  .problem-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .problem-item { padding: 1.25rem; background: rgba(239, 68, 68, 0.06); border: 1px solid rgba(239, 68, 68, 0.18); border-radius: 12px; }
+  .problem-item .num { color: var(--danger); font-size: 1.6rem; font-weight: 800; }
+  .problem-item .lbl { font-weight: 600; margin-top: 0.25rem; }
+  .problem-item .desc { color: var(--muted); font-size: 0.85rem; margin-top: 0.5rem; }
+
+  /* FEATURES */
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .feat { padding: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; backdrop-filter: blur(10px); transition: transform 0.2s, border-color 0.2s; }
+  .feat:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.15); }
+  .feat .icon { width: 36px; height: 36px; border-radius: 8px; background: var(--gradient); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 0.85rem; }
+  .feat h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .feat p { color: var(--muted); font-size: 0.9rem; }
+
+  /* DEMO */
+  .demo-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; overflow: hidden; backdrop-filter: blur(10px); }
+  .demo-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.85rem 1rem; background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid var(--border); }
+  .demo-bar .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .demo-bar .url { font-family: 'Menlo', monospace; font-size: 0.8rem; color: var(--muted); margin-left: 0.75rem; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .demo-frame { width: 100%; aspect-ratio: 16 / 10; border: 0; background: var(--bg); }
+  .demo-cta { padding: 1.25rem; text-align: center; background: rgba(255, 255, 255, 0.02); border-top: 1px solid var(--border); }
+  .demo-cta .btn { margin: 0 0.4rem; }
+
+  /* PRICING */
+  .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+  .price { padding: 2rem 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; position: relative; backdrop-filter: blur(10px); display: flex; flex-direction: column; }
+  .price.featured { border-color: var(--primary); transform: scale(1.02); }
+  .price.featured::before { content: 'MOST POPULAR'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--gradient); color: white; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 999px; letter-spacing: 1px; }
+  .price-name { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); font-weight: 700; }
+  .price-amount { font-size: 2.5rem; font-weight: 800; margin: 0.5rem 0; letter-spacing: -1px; }
+  .price-amount small { font-size: 0.85rem; color: var(--muted); font-weight: 400; }
+  .price-desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 1.25rem; min-height: 2.5rem; }
+  .price ul { list-style: none; margin-bottom: 1.5rem; flex: 1; }
+  .price ul li { padding: 0.5rem 0; font-size: 0.9rem; color: var(--text); display: flex; align-items: start; gap: 0.5rem; }
+  .price ul li::before { content: '✓'; color: var(--success); font-weight: 700; }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 0.75rem; max-width: 760px; }
+  .faq details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.25rem; transition: border-color 0.2s; }
+  .faq details:hover { border-color: rgba(255, 255, 255, 0.12); }
+  .faq details[open] { border-color: var(--primary); }
+  .faq summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .faq summary::after { content: '+'; font-size: 1.25rem; color: var(--muted); transition: transform 0.2s; }
+  .faq details[open] summary::after { content: '−'; color: var(--primary); }
+  .faq .answer { margin-top: 0.75rem; color: var(--muted); font-size: 0.9rem; }
+
+  /* CTA BAND */
+  .cta-band { text-align: center; padding: 4rem 2rem; background: var(--gradient); border-radius: 24px; color: white; margin: 4rem 0 2rem; }
+  .cta-band h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -0.5px; }
+  .cta-band p { opacity: 0.9; margin-bottom: 1.5rem; }
+  .cta-band .btn { background: white; color: var(--primary); }
+
+  /* FOOTER */
+  footer { border-top: 1px solid var(--border); padding: 2rem 0; color: var(--muted); font-size: 0.85rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+
+  @media (max-width: 640px) {
+    .nav-links a:not(.btn) { display: none; }
+    .price.featured { transform: none; }
+  }
+</style>
+
+<div class="wrap">
+
+  <!-- ===== NAV ===== -->
+  <nav class="nav">
+    <div class="logo">⚡ TCPA-INTEGRATION</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#demo">Live Demo</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="mailto:sales@yourdomain.com" class="btn btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Get a License</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <div class="badge">Turnkey · Production-Tested · One-Click Deploy</div>
+    <h1>Never miss <span class="gradient">another opt-out</span>.<br>Stay TCPA/FCC-clean — automatically.</h1>
+    <p class="subtitle">A production-grade Python / FastAPI middleware that ingests opt-outs from Twilio SMS, SendGrid Email, and your own webhooks, classifies intent with AI, and writes consent revocations back to HubSpot, Salesforce, GoHighLevel — with state-tracked retries and an audit log your compliance team will love.</p>
+    <div class="cta-row">
+      <a href="mailto:sales@yourdomain.com?subject=Demo%20Request%20-%20TCPA%20Integration%20Layer" class="btn btn-primary">📞 Book a 15-min demo</a>
+      <a href="#demo" class="btn btn-secondary">▶ See it running</a>
+    </div>
+    <div class="trust-row">
+      <span>🏛️ TCPA + FCC + state DNC</span>
+      <span>🔐 HMAC signature-verified webhooks</span>
+      <span>🔁 Exponential-backoff retry queue</span>
+      <span>🪵 Full audit trail</span>
+      <span>🚀 One-click deploy to Render / Railway / Fly.io</span>
+    </div>
+  </header>
+
+  <!-- ===== PROBLEM ===== -->
+  <section>
+    <div class="section-label">The Problem</div>
+    <h2 class="section-title">One missed "STOP" can cost your client $50,000+.</h2>
+    <p class="section-lead">U.S. agencies are bleeding margin to compliance gaps that nobody on staff has time to chase down. If even 1% of your contacts opt out and your CRM doesn't reflect it — that contact keeps receiving messages, and you keep accruing liability.</p>
+    <div class="problem-grid">
+      <div class="problem-item"><div class="num">$500–$1,500</div><div class="lbl">per TCPA violation</div><div class="desc">Statutory damages add up fast once the AG investigates.</div></div>
+      <div class="problem-item"><div class="num">40–60%</div><div class="lbl">of "STOP" texts get dropped</div><div class="desc">One-off Zapier webs and Twilio auto-replies lose half the signals.</div></div>
+      <div class="problem-item"><div class="num">3+</div><div class="lbl">CRMs your customer might use</div><div class="desc">HubSpot, Salesforce, GHL, custom webhooks — none sync with each other out of the box.</div></div>
+      <div class="problem-item"><div class="num">10–40 hrs</div><div class="lbl">to build this yourself</div><div class="desc">Plus ongoing maintenance for retries, security patches, schema migrations.</div></div>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section id="features">
+    <div class="section-label">What's in the box</div>
+    <h2 class="section-title">Everything you need to close the opt-out loop.</h2>
+    <p class="section-lead">A drop-in Python service. Source code with documentation, deploy scripts, and a visual control panel. No vendor lock-in. Call it yours.</p>
+    <div class="feat-grid">
+      <div class="feat"><div class="icon">📱</div><h3>Twilio SMS ingestion</h3><p>HMAC-SHA1 signature verification, E.164 phone normalization, automatic TwiML "you've been opted out" reply.</p></div>
+      <div class="feat"><div class="icon">✉️</div><h3>SendGrid + IMAP email</h3><p>Multipart form parser for SendGrid Inbound Parse and JSON parser for IMAP bridges. Auto-extracts sender email from "Name &lt;email&gt;" headers.</p></div>
+      <div class="feat"><div class="icon">🪝</div><h3>Generic webhook</h3><p>Custom JSON ingest with dynamic dot-path mapping. Bring your own structure, no schema migration needed.</p></div>
+      <div class="feat"><div class="icon">🧠</div><h3>AI intent classifier</h3><p>Google Gemini (gemini-1.5-flash) with structured-output schema. Detects "STOP", "unsubscribe", "take me off", consent revocations.</p></div>
+      <div class="feat"><div class="icon">🧪</div><h3>Offline rule fallback</h3><p>No Gemini key needed — ships with deterministic keyword parser that catches 95% of US opt-out patterns. Auto-activates if API is down.</p></div>
+      <div class="feat"><div class="icon">🔁</div><h3>State-tracked queue</h3><p>SQLite (or Postgres) backed async queue with 5 states: PENDING → PROCESSING → COMPLETED / FAILED / MAX_RETRIES_EXCEEDED. Failed syncs logged to a separate audit table.</p></div>
+      <div class="feat"><div class="icon">📊</div><h3>Visual control panel</h3><p>Built-in dashboard with live sync-rate meters, audit log browser, manual override form, and integration toggles. Auth via X-API-Key.</p></div>
+      <div class="feat"><div class="icon">🛡️</div><h3>Production hardening</h3><p>Strict-mode secret validation (refuses to start with placeholder keys), CORS allowlist, structured JSON logs, container healthcheck, SQLite WAL.</p></div>
+      <div class="feat"><div class="icon">🚢</div><h3>One-click deploy</h3><p>Dockerfile + Render Blueprint + Railway config + Fly.io toml + Procfile. Pick your platform, click deploy, you're live in 5 minutes.</p></div>
+      <div class="feat"><div class="icon">📞</div><h3>HubSpot dispatcher</h3><p>Search-by-email/phone then update hs_do_not_email / hs_do_not_call. Creates contact if missing.</p></div>
+      <div class="feat"><div class="icon">🛎️</div><h3>Salesforce dispatcher</h3><p>Contact → Lead fallback. Sets HasOptedOutOfEmail / DoNotCall correctly for the channel.</p></div>
+      <div class="feat"><div class="icon">📱</div><h3>GoHighLevel dispatcher</h3><p>Upsert to /contacts/upsert with DNC flag for both phone and email contacts.</p></div>
+    </div>
+  </section>
+
+  <!-- ===== DEMO ===== -->
+  <section id="demo">
+    <div class="section-label">Live Demo</div>
+    <h2 class="section-title">Run a real opt-out through the pipeline. Right now.</h2>
+    <p class="section-lead">The hosted demo ingests "STOP" requests against a mock HubSpot target so you can watch the queue drain end-to-end. Toggle integrations, browse the audit log, and try the manual override form.</p>
+    <div class="demo-card">
+      <div class="demo-bar">
+        <span class="dot" style="background: #ef4444;"></span>
+        <span class="dot" style="background: #f59e0b;"></span>
+        <span class="dot" style="background: #10b981;"></span>
+        <span class="url" id="demoUrlBar">REPLACE_DEMO_URL_HERE/api/v1/health</span>
+      </div>
+      <!-- Replace DEMO_URL_HERE with your Railway/Render public domain -->
+      <iframe id="demoFrame" class="demo-frame" src="REPLACE_DEMO_URL_HERE/" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+      <div class="demo-cta">
+        <a href="REPLACE_DEMO_URL_HERE/" target="_blank" class="btn btn-primary">Open dashboard ↗</a>
+        <a href="REPLACE_DEMO_URL_HERE/api/v1/docs" target="_blank" class="btn btn-secondary">API Swagger</a>
+        <a href="mailto:sales@yourdomain.com?subject=Schedule%20Live%20Demo" class="btn btn-secondary">Talk to a human</a>
+      </div>
+    </div>
+    <p style="margin-top: 0.85rem; font-size: 0.8rem; color: var(--muted); text-align: center;">Demo credentials shown in dashboard. Real production license rotates them.</p>
+  </section>
+
+  <!-- ===== PRICING ===== -->
+  <section id="pricing">
+    <div class="section-label">License Tiers</div>
+    <h2 class="section-title">Pick the SKU that matches how you'll use it.</h2>
+    <p class="section-lead">One-time fee, perpetual source-code license. Optional support packages available.</p>
+    <div class="price-grid">
+      <div class="price">
+        <div class="price-name">Starter</div>
+        <div class="price-amount">$1,495 <small>one-time</small></div>
+        <div class="price-desc">Single team. Single tenant. Pick one CRM.</div>
+        <ul>
+          <li>All 4 ingest channels</li>
+          <li>1 CRM target (HubSpot OR Salesforce OR GHL OR webhook)</li>
+          <li>13-test verification suite</li>
+          <li>Docker + one-click deploy files</li>
+          <li>30-min setup call</li>
+        </ul>
+        <a href="mailto:sales@yourdomain.com?subject=Starter%20License%20Inquiry" class="btn btn-secondary">Buy Starter</a>
+      </div>
+      <div class="price featured">
+        <div class="price-name">Agency</div>
+        <div class="price-amount">$4,500 <small>one-time</small></div>
+        <div class="price-desc">For agencies & multi-tenant platforms.</div>
+        <ul>
+          <li>Everything in Starter</li>
+          <li>All 4 CRM targets (HubSpot + Salesforce + GHL + webhook)</li>
+          <li>Multi-tenant friendly schema</li>
+          <li>Branding-swap rights (your logo in dashboard)</li>
+          <li>2-hour setup + integration pairing</li>
+          <li>90 days of patch support</li>
+        </ul>
+        <a href="mailto:sales@yourdomain.com?subject=Agency%20License%20Inquiry" class="btn btn-primary">Buy Agency</a>
+      </div>
+      <div class="price">
+        <div class="price-name">White-Label OEM</div>
+        <div class="price-amount">$9,500 <small>+ revshare</small></div>
+        <div class="price-desc">Rebrand and sublicense to your clients.</div>
+        <ul>
+          <li>Everything in Agency</li>
+          <li>Rebrand, sublicense, distribute</li>
+          <li>Source code escrow</li>
+          <li>Priority patch SLA (24 hr)</li>
+          <li>8% revenue share OR 12-mo support bundle</li>
+        </ul>
+        <a href="mailto:sales@yourdomain.com?subject=OEM%20License%20Inquiry" class="btn btn-secondary">Talk OEM</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ===== -->
+  <section id="faq">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">Questions buyers ask.</h2>
+    <div class="faq">
+      <details><summary>Works without a Gemini API key?</summary><div class="answer">Yes. The codebase ships with a regex + keyword fallback that catches the dominant U.S. opt-out patterns (STOP, UNSUBSCRIBE, "take me off", END, CANCEL, etc.). Gemini is only used if you set a real key. The dispatcher auto-falls-back if the Gemini API is unreachable.</div></details>
+      <details><summary>Can it run on Postgres?</summary><div class="answer">Yes — set <code>DATABASE_URL=postgresql+asyncpg://USER:PASS@HOST:5432/DBNAME</code> and the same SQLAlchemy ORM will pick it up. Migrations are handled at startup.</div></details>
+      <details><summary>What if Twilio sends a malformed body?</summary><div class="answer">It's acknowledged with a 200 + empty TwiML response so Twilio doesn't retry-bomb you. Strict-mode refuses unsigned requests entirely (no fallback).</div></details>
+      <details><summary>Can I add another CRM after I buy?</summary><div class="answer">Yes. Drop a method onto <code>IntegrationDispatcher</code> (e.g. <code>_dispatch_to_activecampaign</code>) and add an &lt;option&gt; to the new-integration form in the dashboard. Total ~30 minutes of dev.</div></details>
+      <details><summary>Is this open source?</summary><div class="answer">No — a proprietary commercial source license (LICENSE.txt). You can modify for your internal use, sublicense as part of an integrated product (OEM tier), but you cannot rebrand and resell the codebase as your own standalone product (without the OEM tier).</div></details>
+      <details><summary>What kind of support do I get?</summary><div class="answer">Starter: setup call only. Agency: 90 days of patch support. OEM: priority 24-hour SLA + revenue share. Custom SLAs available for negotiated deals.</div></details>
+      <details><summary>How do refunds / guarantees work?</summary><div class="answer">7-day refund window on Starter tier if the code does not deploy as documented. Agency & OEM negotiate guarantee terms in the MSA.</div></details>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <div class="cta-band">
+    <h2>Ship TCPA-clean in days, not quarters.</h2>
+    <p>Book a 15-minute demo. We'll wire a real opt-out through the pipeline live.</p>
+    <a href="mailto:sales@yourdomain.com?subject=Demo%20Request" class="btn">📅 Schedule my demo</a>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <span>© 2026 Your Company — TCPA Opt-Out Integration Layer</span>
+    <span><a href="mailto:sales@yourdomain.com" style="color: var(--muted); text-decoration: none;">sales@yourdomain.com</a> · <a href="#pricing" style="color: var(--muted); text-decoration: none;">Pricing</a> · <a href="#faq" style="color: var(--muted); text-decoration: none;">FAQ</a></span>
+  </footer>
+</div>
+
+<script>
+  // Make the demo URL bar reflect whatever's in the iframe src — handy if you
+  // swap URLs during dev / preview.
+  (function () {
+    var frame = document.getElementById('demoFrame');
+    var bar = document.getElementById('demoUrlBar');
+    if (frame && bar && frame.src) {
+      try { bar.textContent = new URL(frame.src).host; } catch (e) { /* leave default */ }
+    }
+  })();
+</script>

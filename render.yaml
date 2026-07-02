@@ -1,0 +1,49 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# One-click deploy: connect your repo in the Render dashboard and it will
+# create the `tcpa-optout-api` web service using the variables below.
+services:
+  - type: web
+    name: tcpa-optout-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    numInstances: 1
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_FORMAT
+        value: json
+      - key: REQUIRE_STRICT_SECRETS
+        value: "true"
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./data/data.db
+      - key: SQLITE_WAL_MODE
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # ----- Secrets you MUST set in the Render dashboard before first deploy -----
+      - key: ADMIN_API_KEY
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: HUBSPOT_ACCESS_TOKEN
+        sync: false
+      - key: SALESFORCE_INSTANCE_URL
+        sync: false
+      - key: SALESFORCE_ACCESS_TOKEN
+        sync: false
+      - key: GOHIGHLEVEL_ACCESS_TOKEN
+        sync: false
+      - key: GOHIGHLEVEL_LOCATION_ID
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+    disk:
+      name: tcpa-data
+      mountPath: /workspace/data
+      sizeGB: 1

@@ -1,0 +1,53 @@
+TCPA / FCC Opt-Out Integration Layer — Commercial Source License (v1.0)
+=====================================================================
+
+Copyright (c) 2026 Vendor. All Rights Reserved.
+
+This is a COMMERCIAL SOURCE LICENSE, not an open-source license. By
+acquiring, downloading, installing, or running the software in this
+package (the "Software"), the licensee agrees to the following terms:
+
+1. GRANT OF LICENSE
+   Subject to full payment of the license fee, Vendor grants the Licensee
+   a non-exclusive, non-transferable, worldwide right to:
+     (a) deploy, run, and operate the Software, in object code and
+         source code form, on infrastructure controlled by the Licensee;
+     (b) modify the Software solely for the Licensee's own internal use;
+     (c) make a reasonable number of archival copies.
+
+2. PERMITTED USE
+   The Software may be used to ingest, normalize, and synchronize
+   opt-out / DNC / unsubscribe signals across CRM systems for the
+   Licensee's own products or those of the Licensee's direct clients.
+
+3. RESTRICTIONS
+   The Licensee MAY NOT:
+     (a) redistribute, sublicense, resell, or republish the Software
+         in any form, in whole or in part, except as part of an
+         integrated product whose primary value is not the Software itself;
+     (b) rebrand the Software or hold it out as the Licensee's own work;
+     (c) reverse-engineer the Software except as required to integrate
+         with the Licensee's systems under applicable interoperability law;
+     (d) remove or obscure any copyright or proprietary notices.
+
+4. SUPPORT & UPDATES
+   Optional support and update entitlements are described in the
+   licensee's order form. Absent such an order, the Software is provided
+   "AS IS" without warranty of any kind.
+
+5. TERMINATION
+   This license terminates automatically upon any breach that remains
+   uncured for thirty (30) days after written notice from Vendor.
+
+6. GOVERNING LAW
+   This license is governed by the laws of the jurisdiction chosen in
+   the order form. If unspecified, the laws of the State of Delaware,
+   USA, govern, exclusive of conflict-of-laws rules.
+
+7. CONTACT
+   Licensing questions: licensing@your-vendor-domain.example
+
+=====================================================================
+This Software ships under the Commercial Source License above.
+There is NO open-source fallback, MIT fallback, or Apache fallback.
+=====================================================================

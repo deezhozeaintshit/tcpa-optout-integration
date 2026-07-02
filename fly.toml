@@ -1,0 +1,47 @@
+# fly.toml — https://fly.io/docs/reference/configuration/
+app = "tcpa-optout-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  ENVIRONMENT = "production"
+  LOG_FORMAT = "json"
+  REQUIRE_STRICT_SECRETS = "true"
+  SQLITE_WAL_MODE = "true"
+  WEB_CONCURRENCY = "2"
+  PORT = "8000"
+
+[experimental]
+  auto_rollback = true
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8000
+  processes = ["app"]
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+    force_https = true
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [[services.http_checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/api/v1/health"
+
+# Persistent volume — create it BEFORE first deploy:
+#   fly volumes create tcpa_data --size 1 --region iad
+[[mounts]]
+  source = "tcpa_data"
+  destination = "/workspace/data"

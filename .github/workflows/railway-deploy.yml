@@ -1,0 +1,40 @@
+# GitHub Actions workflow -> auto-deploy to Railway on push to main.
+#
+# Setup (one-time):
+#   1. In Railway dashboard: Project -> Settings -> "Deploy Triggers" -> copy
+#      your deploy-hook URL (it points at https://backboard.railway.com/...).
+#   2. In GitHub repo:  Settings -> Secrets and variables -> Actions ->
+#      New repository secret
+#        Name :  RAILWAY_DEPLOY_HOOK
+#        Value:  <paste the deploy hook URL>
+#   3. Push to main -> this workflow fires -> Railway redeploys.
+
+name: Deploy to Railway
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:        # Manual trigger from the Actions tab
+
+concurrency:
+  group: railway-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Railway deploy hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.RAILWAY_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::RAILWAY_DEPLOY_HOOK secret is not set. Skipping deploy."
+            exit 1
+          fi
+          echo "Triggering Railway redeploy via deploy hook..."
+          # Railway's deploy hook is a REST endpoint; POSTing (even with empty
+          # body) triggers a redeploy of the most-recently-deployed service.
+          curl --fail-with-body --silent --show-error --retry 3 --retry-connrefused \
+            -X POST "$DEPLOY_HOOK"
+          echo "Railway redeploy triggered."
