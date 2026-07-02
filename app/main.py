@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
+from sqlalchemy.exc import OperationalError
 
 from app.core.config import settings
 from app.core.database import engine, Base, AsyncSessionLocal
@@ -57,9 +58,19 @@ async def lifespan(app: FastAPI):
         f"log_format={settings.LOG_FORMAT}, worker={settings.WORKER_ENABLED})"
     )
 
-    # 1. Startup: Create SQLite tables if they do not exist
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # 1. Startup: Create SQLite tables if they do not exist.
+    #    Race-safe against concurrent worker subprocesses: when uvicorn runs
+    #    with --workers > 1, multiple PIDs call lifespan() at the same moment.
+    #    SQLAlchemy's create_all uses checkfirst=True which has a TOCTOU race
+    #    — two workers can both see "table missing", both attempt CREATE TABLE,
+    #    and SQLite serializes the writes so the loser sees "already exists".
+    #    The schema is what we wanted either way; swallow that specific error.
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except OperationalError as exc:
+        if "already exists" not in str(exc).lower():
+            raise
     logger.info("SQLite database tables verified/created successfully.")
 
     # 2. Seed initial mock integrations for out-of-the-box demo if database is empty.
