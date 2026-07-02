@@ -1,0 +1,23 @@
+Lead Name,Title,Firm,LinkedIn URL,Pain Hook (1-line),DM Template #(1-20),DM Sent Date,Reply Type,Reply Date,Next Step,Demo Booked Date,Decision Date,Notes
+,,,,,,,,,,,,,_Template-used: Variant A; pre-fill 20 rows below with names from LinkedIn search_
+,,,,,,,,,,,,,
+# row 11,,,https://www.linkedin.com/in/_____________,tcpa opt-out closure,1,,,,,,,,,# Lower-friction: only fill what you have at import time.
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+# Aggregates (formula):,=COUNTIF(M:M,"*Closed*"),=COUNTIF(M:M,"*Demo-booked*"),=COUNTA(L:L)-1,=SUMPRODUCT((M:M="Closed")*(K:K<>"")),,,,,,# (paste these into Excel/Sheets; they recompute live)
