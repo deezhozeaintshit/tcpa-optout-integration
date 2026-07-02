@@ -37,4 +37,7 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD curl -fsS http://localhost:${PORT}/api/v1/health || exit 1
 
 # Production entrypoint uses `uvicorn` with $WEB_CONCURRENCY workers.
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --workers ${WEB_CONCURRENCY}"]
+# Exec form with explicit `sh -c` is required so `${PORT}` / `${WEB_CONCURRENCY}`
+# get shell-expanded. Defaults guarantee a usable fallback even if the host
+# platform (Railway, Render, Fly, plain Docker) does not inject them.
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers ${WEB_CONCURRENCY:-2}"]
